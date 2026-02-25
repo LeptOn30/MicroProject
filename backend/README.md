@@ -1,7 +1,8 @@
-# MicroProject packages structure
+# MicroProject Backend
 
-We chose the Hexagonal Architecture for structuring our microservices because it promotes a clear separation of concerns, enhances modularity and testability, and allows for greater
-flexibility in adapting to changing technologies and requirements. Here are the key principles of this architecture:
+We chose the Hexagonal Architecture for structuring our microservices because it promotes a clear separation of concerns, enhances modularity and testability, and allows for greater flexibility in adapting to changing technologies and requirements.
+
+Here are the key principles of this architecture:
 
 ## Hexagonal Architecture Overview
 
