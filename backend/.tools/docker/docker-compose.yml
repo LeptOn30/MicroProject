@@ -1,0 +1,227 @@
+version: '3.8'
+
+services:
+  useraccountdb:
+    image: mysql:latest
+    container_name: useraccountdb
+    environment:
+      MYSQL_USER: ${MYSQL_USER_NAME}
+      MYSQL_USER_PASSWORD: ${MYSQL_USER_PASSWORD}
+      MYSQL_DATABASE: mproject-user-account
+    ports:
+      - "3307:3306"  # Optional, for local access
+    networks:
+      - mproject-network
+    volumes:
+      - useraccountdb-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "--silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  projectdb:
+    image: mysql:latest
+    container_name: projectdb
+    environment:
+      MYSQL_USER: ${MYSQL_USER_NAME}
+      MYSQL_USER_PASSWORD: ${MYSQL_USER_PASSWORD}
+      MYSQL_DATABASE: mproject-project
+    ports:
+      - "3308:3306"  # Optional, for local access
+    networks:
+      - mproject-network
+    volumes:
+      - projectdb-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "--silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  subscriptiondb:
+    image: mysql:latest
+    container_name: subscriptiondb
+    environment:
+      MYSQL_USER: ${MYSQL_USER_NAME}
+      MYSQL_USER_PASSWORD: ${MYSQL_USER_PASSWORD}
+      MYSQL_DATABASE: mproject-subscription
+    ports:
+      - "3310:3306"  # Optional, for local access
+    networks:
+      - mproject-network
+    volumes:
+      - subscriptiondb-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "--silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  userprofiledb:
+    image: mysql:latest
+    container_name: userprofiledb
+    environment:
+      MYSQL_USER: ${MYSQL_USER_NAME}
+      MYSQL_USER_PASSWORD: ${MYSQL_USER_PASSWORD}
+      MYSQL_DATABASE: mproject-user-profile
+    ports:
+      - "3309:3306" # Optional, for local access
+    networks:
+      - mproject-network
+    volumes:
+      - userprofiledb-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "--silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  eureka:
+    image: mproject-discovery:1.0-SNAPSHOT
+    container_name: mproject-discovery
+    ports:
+      - "8761:8761"
+    networks:
+      - mproject-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  config-server:
+    image: mproject-config:1.0-SNAPSHOT
+    container_name: mproject-config-server
+    ports:
+      - "8888:8888"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://mproject-discovery:8761/eureka/
+    networks:
+      - mproject-network
+    depends_on:
+      eureka:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-account-service:
+    image: mproject-user-account-service:1.0-SNAPSHOT
+    container_name: mproject-user-account-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://mproject-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://useraccountdb:3306/mproject-user-account
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER_NAME}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_USER_PASSWORD}
+    ports:
+      - "8081:8081" # Optional, for local access
+    networks:
+      - mproject-network
+    depends_on:
+      useraccountdb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    restart: always
+
+  user-profile-service1:
+    image: mproject-user-profile-service:1.0-SNAPSHOT
+    container_name: mproject-user-profile-service1
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://mproject-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://userprofiledb:3306/mproject-user-profile
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER_NAME}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_USER_PASSWORD}
+    ports:
+      - "8083:8083" # Optional, for local access
+    networks:
+      - mproject-network
+    depends_on:
+      userprofiledb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    restart: always
+
+  user-profile-service2:
+    image: mproject-user-profile-service:1.0-SNAPSHOT
+    container_name: mproject-user-profile-service2
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://mproject-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://userprofiledb:3306/mproject-user-profile
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER_NAME}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_USER_PASSWORD}
+    ports:
+      - "8085:8083" # Optional, for local access
+    networks:
+      - mproject-network
+    depends_on:
+      userprofiledb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    restart: always
+
+  project-service:
+    image: mproject-project-service:1.0-SNAPSHOT
+    container_name: mproject-project-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://mproject-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://projectdb:3306/mproject-project
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER_NAME}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_USER_PASSWORD}
+    ports:
+      - "8082:8082" # Optional, for local access
+    networks:
+      - mproject-network
+    depends_on:
+      projectdb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    restart: always
+
+  subscription-service:
+    image: mproject-subscription-service:1.0-SNAPSHOT
+    container_name: mproject-subscription-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://mproject-discovery:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:mysql://subscriptiondb:3306/mproject-subscription
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER_NAME}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_USER_PASSWORD}
+    ports:
+      - "8084:8084" # Optional, for local access
+    networks:
+      - mproject-network
+    depends_on:
+      subscriptiondb:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    restart: always
+
+  gateway:
+    image: mproject-gateway:1.0-SNAPSHOT
+    container_name: mproject-gateway
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://mproject-discovery:8761/eureka/
+    ports:
+      - "8080:8080"
+    networks:
+      - mproject-network
+    depends_on:
+      config-server:
+        condition: service_healthy
+
+networks:
+  mproject-network:
+    driver: bridge
+
+volumes:
+  useraccountdb-data:
+  projectdb-data:
+  userprofiledb-data:
+  subscriptiondb-data:

@@ -1,0 +1,32 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: mproject-project-service
+  config:
+    import: optional:configserver:/
+  cloud:
+    config:
+      discovery:
+        service-id: mproject-config-server
+        enabled: true
+    openfeign:
+      client:
+        refresh-enabled: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+springdoc:
+  api-docs:
+    path: /project-service/v3/api-docs
+
+  swagger-ui:
+    config-url: /project-service/v3/api-docs/swagger-config
+    path: /project-service/swagger-ui.html
+    url: /project-service/v3/api-docs

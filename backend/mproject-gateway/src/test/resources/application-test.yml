@@ -1,0 +1,36 @@
+spring:
+  main:
+    web-application-type: reactive
+  cloud:
+    discovery:
+      enabled: false
+    config:
+      enabled: false
+    gateway:
+      routes:
+        - id: user-account-service
+          uri: lb://mproject-user-account-service
+          predicates:
+            - Path=/api/v1/users/**, /api/v1/auth/login
+          filters:
+            - AddRequestHeader=User-Request, Gateway
+        - id: project-service
+          uri: lb://mproject-project-service
+          predicates:
+            - Path=/api/v1/tasks/**,/api/v1/projects/**
+          filters:
+            - AddRequestHeader=Project-Request, Gateway
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+code:
+  secret: mAvsZD2KqE2Kv6VpF+VkN1P3PT+2uq5z0g2ZxF0StSc=
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework: DEBUG
+    org.springframework.web: DEBUG

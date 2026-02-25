@@ -1,0 +1,20 @@
+package com.dgw.user.profile.core.service.adapter.out.persistence;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface JPAUserProfileSpringDataRepository extends JpaRepository<UserProfileEntity, Long> {
+
+    @Query("SELECT p FROM UserProfileEntity p WHERE p.firstName LIKE %:query% OR p.lastName LIKE %:query%")
+    List<UserProfileEntity> findByFirstNameOrLastName(@Param("query") String query);
+
+    List<UserProfileEntity> findByEmailIn(List<String> emails);
+
+    Optional<UserProfileEntity> findByEmail(String email);
+}

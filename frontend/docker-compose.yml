@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  mproject-angular:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mproject-angular
+    ports:
+      - "4200:80"
+    restart: unless-stopped
+    # For development with backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - mproject-network
+
+networks:
+  mproject-network:
+    driver: bridge

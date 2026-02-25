@@ -1,0 +1,13 @@
+package com.dgw.subscription.code.model.port.in;
+
+import com.dgw.subscription.code.model.Subscription;
+import com.dgw.subscription.code.model.model.CreateSubscriptionCommand;
+
+import java.util.List;
+
+public interface SubscriptionUseCases {
+
+    Subscription addSubscription(CreateSubscriptionCommand createSubscriptionCommand);
+
+    List<Subscription> getAllSubscriptions();
+}

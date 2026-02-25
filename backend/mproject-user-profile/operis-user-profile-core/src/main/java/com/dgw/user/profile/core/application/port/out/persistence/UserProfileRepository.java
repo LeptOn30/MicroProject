@@ -1,0 +1,19 @@
+package com.dgw.user.profile.core.application.port.out.persistence;
+
+import com.dgw.user.profile.core.application.model.SearchCriteria;
+import com.dgw.user.profile.core.application.model.UserProfile;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface UserProfileRepository {
+    UserProfile save(UserProfile userProfile);
+
+    List<UserProfile> search(SearchCriteria criteria);
+
+    Optional<UserProfile> findById(Long id);
+
+    List<UserProfile> findByEmailIn(List<String> emails);
+
+    Optional<UserProfile> findByEmail(String email);
+}

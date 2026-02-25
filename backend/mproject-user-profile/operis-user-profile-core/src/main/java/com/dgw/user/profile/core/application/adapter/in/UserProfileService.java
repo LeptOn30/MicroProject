@@ -1,0 +1,41 @@
+package com.dgw.user.profile.core.application.adapter.in;
+
+import com.dgw.user.profile.core.application.model.SearchCriteria;
+import com.dgw.user.profile.core.application.model.UserProfile;
+import com.dgw.user.profile.core.application.model.exception.NotFoundException;
+import com.dgw.user.profile.core.application.port.in.UserProfileUseCases;
+import com.dgw.user.profile.core.application.port.out.persistence.UserProfileRepository;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.Optional;
+
+@RequiredArgsConstructor
+public class UserProfileService implements UserProfileUseCases {
+    private final UserProfileRepository userProfileRepository;
+
+    @Override
+    public UserProfile save(UserProfile userProfile) {
+        if (userProfile.id() != null) {
+            userProfileRepository.findById(userProfile.id())
+                    .orElseThrow(() -> new NotFoundException("User profile not found"));
+        }
+
+        return userProfileRepository.save(userProfile);
+    }
+
+    @Override
+    public List<UserProfile> search(SearchCriteria searchCriteria) {
+        return userProfileRepository.search(searchCriteria);
+    }
+
+    @Override
+    public List<UserProfile> findByEmails(List<String> emails) {
+        return userProfileRepository.findByEmailIn(emails);
+    }
+
+    @Override
+    public Optional<UserProfile> findByEmail(String email) {
+        return userProfileRepository.findByEmail(email);
+    }
+}

@@ -1,0 +1,20 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: mproject-user-account-service
+  config:
+    import: optional:configserver:/
+  cloud:
+    config:
+      discovery:
+        service-id: mproject-config-server
+        enabled: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

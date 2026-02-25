@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: mproject-discovery
+server:
+  port: 8761
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, loggers, metrics, refresh, env

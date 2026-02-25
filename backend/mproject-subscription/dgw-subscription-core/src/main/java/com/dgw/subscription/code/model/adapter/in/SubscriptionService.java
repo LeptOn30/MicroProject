@@ -1,0 +1,32 @@
+package com.dgw.subscription.code.model.adapter.in;
+
+import com.dgw.subscription.code.model.Subscription;
+import com.dgw.subscription.code.model.model.CreateSubscriptionCommand;
+import com.dgw.subscription.code.model.port.in.SubscriptionUseCases;
+import com.dgw.subscription.code.model.port.out.persistence.SubscriptionRepository;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.UUID;
+
+@RequiredArgsConstructor
+public class SubscriptionService implements SubscriptionUseCases {
+
+    private final SubscriptionRepository subscriptionRepository;
+
+    @Override
+    public Subscription addSubscription(CreateSubscriptionCommand command) {
+        return subscriptionRepository.save(
+                new Subscription(UUID.randomUUID().toString(),
+                        command.name(),
+                        command.description(),
+                        command.features()
+                )
+        );
+    }
+
+    @Override
+    public List<Subscription> getAllSubscriptions() {
+        return subscriptionRepository.findAll();
+    }
+}

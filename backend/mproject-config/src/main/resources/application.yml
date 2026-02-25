@@ -1,0 +1,24 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: mproject-config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/SkillMakers/mproject-config-repo
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, loggers, metrics, refresh, env

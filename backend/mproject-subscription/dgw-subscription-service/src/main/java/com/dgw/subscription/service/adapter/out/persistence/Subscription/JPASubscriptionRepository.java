@@ -1,0 +1,36 @@
+package com.dgw.operis.subscription.service.adapter.out.persistence.Subscription;
+
+import com.dgw.subscription.code.model.Subscription;
+import com.dgw.subscription.code.model.port.out.persistence.SubscriptionRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+@RequiredArgsConstructor
+public class JPASubscriptionRepository implements SubscriptionRepository {
+
+    private final JPASubscriptionSpringDataRepository jpaSubscriptionSpringDataRepository;
+
+    @Override
+    public Subscription save(Subscription subscription) {
+        SubscriptionEntity subscriptionEntity = SubscriptionEntity.from(subscription);
+        jpaSubscriptionSpringDataRepository.save(subscriptionEntity);
+        return subscription;
+    }
+
+    @Override
+    public Subscription findById(String subscriptionId) {
+        return jpaSubscriptionSpringDataRepository.findById(subscriptionId)
+                .map(SubscriptionEntity::toDomain)
+                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+    }
+
+    @Override
+    public List<Subscription> findAll() {
+        return jpaSubscriptionSpringDataRepository.findAll()
+                .stream().map(SubscriptionEntity::toDomain)
+                .toList();
+    }
+}
