@@ -1,10 +1,12 @@
-# MicroProject Project Management Tool
+# MicroProject - Project Management Tool
 
 For the MicroProject microservices platform frontend we chosed Angular framework. It provides user interfaces for user management, project management, and subscription services.
 
 For the backend we chosed Spring Boot framework and decided to use the Hexagonal Architecture for structuring our microservices because it promotes a clear separation of concerns, enhances modularity and testability, and allows for greater flexibility in adapting to changing technologies and requirements. 
 
-# MicroProject Backend
+
+
+# MicroProject - Backend (Spring Boot)
 
 Here are the key principles of this architecture:
 
@@ -75,7 +77,8 @@ docker-compose up -d <service-name>
 ℹ️ For example, user-profile-service or eureka
 
 
-# MicroProject Backend
+
+# MicroProject - Frontend (Angular)
 
 This project is the frontend Angular application for the MicroProject microservices platform. It provides user interfaces for user management, project management, and subscription services.
 
